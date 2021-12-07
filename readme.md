@@ -2,7 +2,7 @@
 
 # GH Release Paniker
 
-A simple Raspberry Pi Integrated GitHub Action, which paniks and lights up if your release build fails to build.
+A simple GitHub Action that physically puts your senses on alert when your build/release fails
 
 
 ## Usage
@@ -37,9 +37,17 @@ Raspberry Pi, LED, Buzzer, Internet connection, Router with port-forwarding capa
 
   From the `.github/workflows` folder, you have various workflows to pick for your project, pick one and replace the public IP in the last line where it asks you to replace
 
-- **Step 5: Hope this setup never buzzes! and may your releases always succedd**
+  Incase you want to add your own YAML workflow, just ensure the `continue-on-error: true` is appended to each step and then you can add an additional step as follows:
 
+  ```yaml
+      - name: Send Paniker
+        if: steps.stepID.outcome != 'success' # Replace Step ID with your stepid 
+        run: curl http://YOUR_IP:3000/panik # Replace the port-forwaded public IP
+  ```
 
+- **Step 5: Hope this setup never buzzes! and may your releases always succeed**
+
+In order to turn off the buzzer, you have to go the following url: http://YOUR_IP:3000/stop
 
 ## Actions Available
 
