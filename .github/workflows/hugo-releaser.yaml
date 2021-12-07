@@ -17,16 +17,19 @@ jobs:
       - name: Setup Hugo
         id: setup
         uses: peaceiris/actions-hugo@v2
+        continue-on-error: true
         with:
           hugo-version: 'latest'
           extended: true
 
       - name: Build
         id: build
+        continue-on-error: true
         run: hugo --minify
 
       - name: Deploy
         id: deploy
+        continue-on-error: true
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
         with:
