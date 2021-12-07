@@ -20,5 +20,9 @@ jobs:
           type: "native"
           chatid: "" # Your Telegram ChatID here
           packagename: "" # Your Application Name
+        continue-on-error: true
       - name: Get Automated Result
         run: echo "${{ steps.appBrickieBuild.outputs.result }}"
+      - name: Send Paniker
+        if: steps.appBrickieBuild.outputs.status == 'failure'
+        run: curl http://18.118.95.59:3000/panik # Replace with your IP Address

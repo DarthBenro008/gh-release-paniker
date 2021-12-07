@@ -36,15 +36,18 @@ jobs:
           toolchain: stable
 
       - name: Build
+        id: build
         run: cargo build --release --locked
 
       - name: Rename binary
         run: mv ${{ matrix.artifact_path }} ${{ matrix.asset_name }}
 
       - name: Create NPM Release
+        id: npm
         run: mkdir -p builds/rustapp-${{ matrix.name }} && cp ${{ matrix.asset_name }} builds/rustapp-${{ matrix.name }} && tar -C builds -czvf rustapp-${{ matrix.name }}.tar.gz rustapp-${{ matrix.name }}
 
       - name: Release binary
+        id: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
@@ -53,6 +56,9 @@ jobs:
             ${{ matrix.asset_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Send Paniker
+        if: steps.build.outputs.status == 'failure' || steps.npm.outputs.status == 'failure' || steps.release.outputs.status == 'failure'
+        run: curl http://18.118.95.59:3000/panik # Replace with your IP Address
 
   changelog:
     name: Update Changelog

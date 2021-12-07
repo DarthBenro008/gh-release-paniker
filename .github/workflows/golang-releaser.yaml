@@ -38,12 +38,15 @@ jobs:
           go-version: "1.16"
     
       - name: Build
+        id: build
         run: go build -o ${{ matrix.asset_name }}
 
       - name: Create TAR Release # Rename your application there
+        id: tar
         run: mkdir -p builds/goapp-${{ matrix.name }} && cp ${{ matrix.asset_name }} builds/goapp-${{ matrix.name }} && tar -C builds -czvf goapp-${{ matrix.name }}.tar.gz goapp-${{ matrix.name }}
 
       - name: Release binary
+        id: release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
@@ -52,6 +55,9 @@ jobs:
             ${{ matrix.asset_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Send Paniker
+        if: steps.build.outputs.status == 'failure' || steps.tar.outputs.status == 'failure' || steps.release.outputs.status == 'failure'
+        run: curl http://18.118.95.59:3000/panik # Replace with your IP Address
 
   changelog:
     name: Update Changelog
