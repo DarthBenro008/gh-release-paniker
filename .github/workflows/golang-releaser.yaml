@@ -1,0 +1,68 @@
+name: GoLang Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.CLIENT }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [linux, windows, macos]
+        include:
+          - name: linux
+            os: ubuntu-latest
+            artifact_path: target/release/goapp
+            asset_name: goapp-linux # Rename your application there
+          - name: windows
+            os: windows-latest
+            artifact_path: target/release/goapp.exe
+            asset_name: goapp.exe # Rename your application there
+          - name: macos
+            os: macos-latest
+            artifact_path: target/release/goapp
+            asset_name: goapp-macos # Rename your application there
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "1.16"
+    
+      - name: Build
+        run: go build -o ${{ matrix.asset_name }}
+
+      - name: Create TAR Release # Rename your application there
+        run: mkdir -p builds/goapp-${{ matrix.name }} && cp ${{ matrix.asset_name }} builds/goapp-${{ matrix.name }} && tar -C builds -czvf goapp-${{ matrix.name }}.tar.gz goapp-${{ matrix.name }}
+
+      - name: Release binary
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            goapp-${{ matrix.name }}.tar.gz
+            ${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  changelog:
+    name: Update Changelog
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Release Changelog
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
