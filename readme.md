@@ -1,4 +1,47 @@
-# The Ultimate GitHub Actions Release Repository
+![banner](assets/banner.png)
+
+# GH Release Paniker
+
+A simple Raspberry Pi Integrated GitHub Action, which paniks and lights up if your release build fails to build.
+
+
+## Usage
+
+**Requirements:**
+
+Raspberry Pi, LED, Buzzer, Internet connection, Router with port-forwarding capabilities and some patience :D
+
+- **Step 1: Assembling the Circuit**
+  
+  Assemble the Circuit as given in the diagram
+
+  ![circuit](assets/circuit.png)
+
+- **Step 2: Installing the FastAPI Server**
+  Clone the repo using the comment `git clone https://github.com/DarthBenro008/gh-release-paniker` in your Raspberry Pi
+
+  Run the following commands:
+
+  ```bash
+  cd server
+  pip install -r requirements.txt
+  unvicorn main:app --host=0.0.0.0 --port=3000
+  ```
+- **Step 3: Port forward and get the IP Address of your Raspberry Pi**
+  
+  Go to your Router settings and port forward the IP address of your Raspbery Pi on port 3000
+
+  *Warning: Port forwarding exposes your raspberry pi to the internet, ensure you do not have any sensitive data or server running on it*
+
+- **Step 4: Pick a GitHub Action workflow from this repository**
+
+  From the `.github/workflows` folder, you have various workflows to pick for your project, pick one and replace the public IP in the last line where it asks you to replace
+
+- **Step 5: Hope this setup never buzzes! and may your releases always succedd**
+
+
+
+## Actions Available
 
 This repository contains various GitHub Actions that help Open-Source projects release a new version of their project with a single command. 
 
@@ -27,4 +70,3 @@ This repository contains the following:
 - peaceiris/actions-hugo@v2
 - peaceiris/actions-gh-pages@v3
 - DarthBenro008/app-brickie@v3.1
-
