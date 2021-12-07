@@ -36,5 +36,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
       - name: Send Paniker
-        if: steps.setup.outputs.status == 'failure' || steps.build.outputs.status == 'failure' || steps.deploy.outputs.status == 'failure'
+        if: steps.setup.outcome != 'success' || steps.build.outcome != 'success' || steps.deploy.outcome != 'success'
         run: curl http://18.118.95.59:3000/panik # Replace with your IP Address

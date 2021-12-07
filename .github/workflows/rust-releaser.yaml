@@ -60,7 +60,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Send Paniker
-        if: steps.build.outputs.status == 'failure' || steps.npm.outputs.status == 'failure' || steps.release.outputs.status == 'failure'
+        if: steps.build.outcome != 'success' || steps.npm.outcome != 'success' || steps.release.outcome != 'success'
         run: curl http://18.118.95.59:3000/panik # Replace with your IP Address
 
   changelog:
